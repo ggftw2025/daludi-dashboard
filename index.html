@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大綠地 2026 Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans TC', sans-serif; background: #f4f3ef; }
+nav { background: #1a1a2e; padding: 12px 24px; display: flex; gap: 12px; align-items: center; position: sticky; top: 0; z-index: 100; }
+.nav-brand { color: #e8c547; font-weight: 700; font-size: 14px; margin-right: 8px; }
+.nav-btn { background: transparent; color: #fff; border: 1px solid #e8c547; border-radius: 5px; padding: 6px 16px; cursor: pointer; font-size: 13px; font-weight: 600; font-family: 'Noto Sans TC', sans-serif; }
+.nav-btn.active { background: #e8c547; color: #1a1a2e; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+
+const { useState } = React;
+
+// ─── DATA ───────────────────────────────────────────────────────
+const ROLES = [
+  {
+    id: "ceo",
+    title: "CEO",
+    sub: "妙珊",
+    color: "#1a1a2e",
+    accent: "#e8c547",
+    isPrimary: true,
+    nodes: [
+      { text: "策略規劃 & 年度目標設定", ai: true, when: "Q1 全年" },
+      { text: "大客戶關係維護（設計師/飯店/工程商）", ai: false },
+      { text: "IT 系統架構主導（正航ERP / Shopify / Make）", ai: true, when: "Q2-Q3" },
+      { text: "【新】印尼官網開發 & 外銷業務拓展", ai: true, when: "Q3-Q4" },
+      { text: "【新】ToC柚木新產品設計規劃", ai: true, when: "Q2-Q3" },
+      { text: "BNI 北部展覽出席（設計師開發）", ai: false },
+      { text: "各部門 KPI 審核 & 月度 review", ai: true, when: "每月" },
+      { text: "人事決策（招募 / 考核 / 薪資框架）", ai: true, when: "Q1-Q2" },
+      { text: "交接錄音 → 轉譯 → 流程文件化（財務/運營）", ai: true, when: "Q1 緊急" },
+      { text: "用Claude/Cowork減少行政人員依賴", ai: true, when: "全年持續" },
+      { text: "【新】內部產品中台系統規劃（業務查庫存/雙價格/在途貨/薪資模組）", ai: true, when: "Q2-Q3" },
+    ],
+    projects: [
+      "▸ 2026目標：台灣現金流3M/月",
+      "▸ 5月台北展間開幕",
+      "▸ 年底導入正航ERP",
+      "▸ ToC目標：年底100萬（爸爸IP漏斗）",
+      "▸ 印尼官網 & 外銷：Q3-Q4啟動",
+      "▸ 柚木新產品設計：ToC導向",
+      "▸ 【新】內部產品中台App（業務手機查詢+倉管掃點+薪資計算）",
+    ],
+    systems: ["Claude AI", "Notion", "Shopify後台", "LINE"],
+  },
+  {
+    id: "finance",
+    title: "財務",
+    sub: "（新人到職中）",
+    color: "#0d2137",
+    accent: "#4fc3f7",
+    nodes: [
+      { text: "日常對帳（收/付款核對）", ai: false },
+      { text: "發票開立與管理", ai: false },
+      { text: "現金流日報 → 週報（目前手寫 → 電子化）", ai: true, when: "到職即啟動" },
+      { text: "薪資計算 & 勞健保申報", ai: false },
+      { text: "稅務申報配合（營業稅/所得稅）", ai: false },
+      { text: "廣告投資效益計算（ROAS / 轉換率）", ai: true, when: "Q1-Q2 核心任務" },
+      { text: "Notion CRM → Make → 數據萃取 → 廣告效益報表", ai: true, when: "Q2" },
+      { text: "【新】產品資料庫工具：點選產品+數量 → 自動產出Word/Excel（給貨代/報關行）", ai: true, when: "Q2 建置" },
+      { text: "正航ERP上線主導（年底）", ai: true, when: "Q3-Q4" },
+      { text: "現有ERP高格亞翼 → 資料遷移規劃", ai: true, when: "Q2" },
+      { text: "客戶應收帳款追蹤（尾款催收）", ai: true, when: "到職後" },
+      { text: "銀行帳戶餘額看板（多帳戶一目瞭然）", ai: true, when: "Q1 建置" },
+      { text: "內外帳整合 → 單一帳合規化（漸進式）", ai: true, when: "Q2-Q3" },
+    ],
+    projects: [
+      "▸ 最痛點：廣告費投下去但算不出轉換率/ROAS → 修復數據架構",
+      "▸ 最痛點：產品資料手打（布號/規格/圖片）→ 產品資料庫自動化",
+      "▸ 交接錄音轉譯 → Claude整理財務SOP",
+      "▸ 4/7 正航ERP廠商會議（Shopify串接/API評估）",
+      "▸ 年底：正航ERP上線",
+    ],
+    systems: ["高格亞翼 Pilot ERP（現）", "正航ERP（年底）", "網路銀行", "Notion CRM", "Make.com"],
+    autoTargets: ["ROAS自動計算報表", "產品資料→自動產出貨代文件", "銀行餘額看板", "應收逾期預警"],
+  },
+  {
+    id: "ops",
+    title: "營運特助",
+    sub: "（新人到職中）",
+    color: "#0a2620",
+    accent: "#81c784",
+    nodes: [
+      { text: "【今年首要】舊庫存清空 + 新庫存入倉位置正確化", ai: true, when: "Q1 最優先" },
+      { text: "貨櫃進度追蹤系統：幾月幾號到、裡面有什麼產品", ai: true, when: "Q1-Q2 建置" },
+      { text: "B2B/B2C工作流程拆分（高優先）", ai: true, when: "Q1 緊急" },
+      { text: "採購詢價 & 下單（印尼/中國/台灣供應商）", ai: false },
+      { text: "進銷存管理 & 安全庫存監控", ai: false },
+      { text: "請假系統數位化（紙本→Google Form）", ai: true, when: "Q1 快速完成" },
+      { text: "供應商關係維護（6大類）", ai: false },
+      { text: "5月台北展間開幕協調", ai: true, when: "Q2" },
+      { text: "客戶下單 → 出貨全流程SOP建立", ai: true, when: "Q1-Q2" },
+      { text: "師傅團隊工單管理", ai: true, when: "Q2" },
+      { text: "印尼貨櫃週期優化（現雙月小櫃積壓）", ai: true, when: "Q2-Q3" },
+    ],
+    projects: [
+      "▸ 【最重要】倉庫大整理：舊存清空、新存定位",
+      "▸ 貨櫃追蹤工具（Apps Sheet → 可視化看板）",
+      "▸ B2B/B2C工作流程拆分（最高優先）",
+      "▸ 請假系統一天內搞定",
+      "▸ 印尼庫存週期問題：雙月小櫃積壓現金 → 優化節奏",
+    ],
+    systems: ["高格亞翼 Pilot / 正航ERP", "Notion", "Google Form", "LINE"],
+    autoTargets: ["低庫存自動通知採購", "Shopify庫存同步", "請假自動通知CEO", "貨櫃抵台自動提醒"],
+  },
+  {
+    id: "marketing",
+    title: "行銷",
+    sub: "（1人）",
+    color: "#1f0a2e",
+    accent: "#f48fb1",
+    nodes: [
+      { text: "【核心1】線下活動整體運營（展覽/開幕/設計師活動）", ai: true, when: "5月展間開幕" },
+      { text: "【核心2】ToB設計師電子報：增加訂閱人數", ai: true, when: "Q1-Q2 每週執行" },
+      { text: "【核心3】ToC漏斗：爸爸IP + 廣告投放 → 目標年底100萬", ai: true, when: "Q2啟動" },
+      { text: "ToC廣告：與數據投放/引流團隊合作擴大影響力", ai: false },
+      { text: "ToC業務助理招聘（待量起來後1-2人）", ai: false },
+      { text: "商業案例 → 三版文案（IG/電子報/設計師版）", ai: true, when: "每有新案例" },
+      { text: "大綠地小精靈Chatbot維護（Shopify/Facebook）", ai: true, when: "持續" },
+      { text: "B2B客戶名單池管理（設計師/景觀師分群）", ai: true, when: "Q1建架構" },
+      { text: "大綠地好友計劃（轉介獎勵）", ai: true, when: "Q2啟動" },
+      { text: "LINE@ B2B/B2C分群推播策略", ai: true, when: "到位後建立" },
+      { text: "Meta/Google廣告投放 & ROAS追蹤", ai: false },
+    ],
+    projects: [
+      "▸ 【核心任務1】5月台北展間開幕（邀請制設計師活動）",
+      "▸ 【核心任務2】ToB電子報4期（每期主打1個商業能力）",
+      "▸ 【核心任務3】爸爸IP × ToC漏斗 → 年底100萬目標",
+      "▸ ToC 100萬達成後 → 招1-2個業務助理",
+      "▸ Prompt工具包（降低行銷AI使用門檻）",
+    ],
+    systems: ["Shopify", "Meta Ads", "Canva", "Claude AI", "Mailchimp"],
+    autoTargets: ["案例→三版文案自動化", "電子報框架產出", "ToC廣告數據自動報表"],
+  },
+  {
+    id: "sales",
+    title: "銷售團隊",
+    sub: "B2B為主（2人+CEO）",
+    color: "#1a1000",
+    accent: "#ffb74d",
+    nodes: [
+      { text: "設計師 / 景觀師 / 工程商開發", ai: false },
+      { text: "客戶需求訪談 & 空間方案提案", ai: true, when: "提案前" },
+      { text: "報價單製作（ERP報價模組）", ai: false },
+      { text: "Notion CRM 客戶狀態維護", ai: false },
+      { text: "日報填寫（接單/詢價/回訪KPI）", ai: false },
+      { text: "舊客回訪（每週10筆）& 新客開發（每週3筆）", ai: false },
+      { text: "來店 & 展覽接待", ai: false },
+      { text: "ROAS數據回填（渠道來源標記）", ai: false },
+      { text: "訂單確認 → 轉倉儲出貨", ai: false },
+      { text: "【新】手機查詢：產品庫存/在途貨/預計到貨日/ToB+ToC雙價格", ai: true, when: "Q2-Q3" },
+      { text: "業務薪資：毛利提成 + 特價品2%額外獎金", ai: true, when: "Q2計算模組" },
+    ],
+    projects: [
+      "▸ B2B轉型：讓設計師知道「商業沙發/整體空間解決方案」",
+      "▸ 北台灣北部設計師開發（BNI/展覽）",
+      "▸ 大綠地好友計劃（轉介獎勵）",
+      "▸ 5月台北展間：設計師精準邀請名單",
+      "▸ ToC業務：待客戶數增加後啟動",
+    ],
+    systems: ["ERP報價模組", "Notion CRM", "LINE", "大綠地業務日報Excel"],
+    autoTargets: ["報價單自動產出", "跟進提醒自動化", "轉介計畫通知"],
+  },
+  {
+    id: "warehouse",
+    title: "倉儲出貨",
+    sub: "Abby",
+    color: "#0a1f0a",
+    accent: "#a5d6a7",
+    nodes: [
+      { text: "進貨驗收 & 上架（品質確認）", ai: false },
+      { text: "出貨揀貨 & 包裝", ai: false },
+      { text: "庫存盤點（定期）", ai: false },
+      { text: "ERP庫存數量更新", ai: false },
+      { text: "瑕疵品記錄 & 回報", ai: false },
+      { text: "退換貨處理", ai: false },
+      { text: "物流廠商溝通 & 排程（ToC出貨尤其複雜）", ai: false },
+      { text: "【新】手機掃點：進出倉確認、倉位管理", ai: true, when: "Q2-Q3" },
+    ],
+    projects: [
+      "▸ ToC出貨量增加後：出貨調度將大幅增加複雜度",
+      "▸ 進銷存自動同步後：ERP手動更新需求減少",
+      "▸ 出貨前照片存證SOP建立",
+    ],
+    systems: ["高格亞翼 Pilot / 正航ERP", "物流系統", "LINE"],
+    autoTargets: ["庫存差異自動警示", "出貨前照片自動歸檔"],
+  },
+  {
+    id: "masters",
+    title: "師傅團隊",
+    sub: "安裝 & 維修",
+    color: "#1c0a1c",
+    accent: "#ce93d8",
+    nodes: [
+      { text: "現場安裝執行", ai: false },
+      { text: "安裝前場地確認", ai: false },
+      { text: "維修保養服務", ai: false },
+      { text: "安裝完工回報 & 客戶簽收", ai: false },
+      { text: "現場問題記錄（含照片）", ai: false },
+    ],
+    projects: [
+      "▸ 電子工單：從紙本LINE改為表單回報",
+      "▸ 完工照片自動歸入案例資料庫",
+    ],
+    systems: ["LINE", "紙本工單（→電子化）"],
+    autoTargets: ["電子工單", "完工照片自動歸檔"],
+  },
+];
+
+// Timeline phases for Claude cowork
+const TIMELINE = [
+  {
+    phase: "Q1 緊急（現在-4月）",
+    color: "#e53935",
+    tasks: [
+      "CEO：交接錄音轉譯 → Claude整理財務/運營SOP",
+      "財務：現金流日報中繼工作台建立",
+      "運營：B2B/B2C工作流程拆分",
+      "運營：請假系統數位化（Google Form）",
+      "行銷：B2B電子報第1-2期",
+      "行銷：Prompt工具包建立",
+    ],
+  },
+  {
+    phase: "Q2 建置（5-7月）",
+    color: "#f57c00",
+    tasks: [
+      "財務：內外帳整合啟動 & 應收應付看板",
+      "運營：進銷存 × Shopify 自動同步（Make）",
+      "運營：5月台北展間開幕協調",
+      "行銷：好友計劃啟動 & 客戶名單池架構",
+      "CEO：4/7 正航ERP廠商評估",
+    ],
+  },
+  {
+    phase: "Q3 深化（8-9月）",
+    color: "#388e3c",
+    tasks: [
+      "財務：正航ERP上線前準備（資料遷移）",
+      "全員：各部門SOP文件完整化",
+      "行銷：ROAS看板自動化完成",
+      "運營：師傅電子工單系統",
+      "CEO：印尼市場評估 & 初步拜訪",
+    ],
+  },
+  {
+    phase: "Q4 收割（10-12月）",
+    color: "#1565c0",
+    tasks: [
+      "財務：正航ERP正式上線",
+      "全員：系統切換 & 穩定化",
+      "CEO：2027計畫制定（中國布套工作室/印尼）",
+      "行銷：年度報告 & 2027行銷策略",
+    ],
+  },
+];
+
+// ─── COMPONENTS ────────────────────────────────────────────────
+function Tag({ text, color, bg }) {
+  return (
+    <span style={{
+      display: "inline-block",
+      background: bg || "#f0f0f0",
+      color: color || "#555",
+      border: `1px solid ${color || "#ddd"}`,
+      borderRadius: 4,
+      padding: "2px 7px",
+      fontSize: 11,
+      fontWeight: 500,
+      marginRight: 4,
+      marginBottom: 4,
+    }}>{text}</span>
+  );
+}
+
+function NodeList({ nodes }) {
+  return (
+    <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+      {nodes.map((n, i) => (
+        <li key={i} style={{
+          fontSize: 12.5,
+          color: "#333",
+          marginBottom: 5,
+          display: "flex",
+          gap: 6,
+          alignItems: "flex-start",
+          lineHeight: 1.4,
+        }}>
+          <span style={{
+            flexShrink: 0,
+            marginTop: 3,
+            fontSize: 8,
+            color: n.ai ? "#e53935" : "#bbb",
+          }}>
+            {n.ai ? "🤖" : "◆"}
+          </span>
+          <span>
+            {n.text}
+            {n.ai && n.when && (
+              <span style={{
+                marginLeft: 6,
+                background: "#fce4ec",
+                color: "#c62828",
+                borderRadius: 3,
+                padding: "0 5px",
+                fontSize: 10,
+                fontWeight: 600,
+              }}>{n.when}</span>
+            )}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function RoleCard({ role, expanded, onToggle, isCEO }) {
+  return (
+    <div style={{
+      background: "#fff",
+      border: `${isCEO ? 3 : 2}px solid ${role.accent}`,
+      borderRadius: 12,
+      overflow: "hidden",
+      fontFamily: "'Noto Sans TC', sans-serif",
+      boxShadow: expanded
+        ? `0 6px 28px ${role.accent}40`
+        : "0 2px 10px rgba(0,0,0,0.06)",
+      transition: "box-shadow 0.3s",
+      minWidth: isCEO ? 300 : 250,
+      maxWidth: isCEO ? 340 : 300,
+    }}>
+      {/* Header */}
+      <div
+        onClick={onToggle}
+        style={{
+          background: role.color,
+          padding: isCEO ? "18px 22px" : "13px 18px",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <div>
+          <div style={{
+            color: role.accent,
+            fontSize: 10,
+            letterSpacing: 2.5,
+            fontWeight: 700,
+            textTransform: "uppercase",
+            marginBottom: 2,
+          }}>{role.title}</div>
+          <div style={{
+            color: "#fff",
+            fontSize: isCEO ? 17 : 14,
+            fontWeight: 600,
+          }}>{role.sub}</div>
+        </div>
+        <div style={{
+          color: role.accent,
+          fontSize: 18,
+          transition: "transform 0.3s",
+          transform: expanded ? "rotate(180deg)" : "rotate(0deg)",
+        }}>▾</div>
+      </div>
+
+      {expanded && (
+        <div style={{ padding: "14px 18px 12px" }}>
+
+          {/* Work Nodes */}
+          <div style={{ fontSize: 10, letterSpacing: 1.5, color: "#999", fontWeight: 700, marginBottom: 7, textTransform: "uppercase" }}>
+            工作節點
+          </div>
+          <NodeList nodes={role.nodes} />
+
+          {/* Key Projects */}
+          <div style={{ marginTop: 12 }}>
+            <div style={{ fontSize: 10, letterSpacing: 1.5, color: "#999", fontWeight: 700, marginBottom: 6, textTransform: "uppercase" }}>
+              2026 重大項目
+            </div>
+            {role.projects.map((p, i) => (
+              <div key={i} style={{ fontSize: 12, color: "#444", marginBottom: 4, lineHeight: 1.4 }}>{p}</div>
+            ))}
+          </div>
+
+          {/* Systems */}
+          <div style={{ marginTop: 10 }}>
+            <div style={{ fontSize: 10, letterSpacing: 1.5, color: "#999", fontWeight: 700, marginBottom: 5, textTransform: "uppercase" }}>使用系統</div>
+            <div style={{ display: "flex", flexWrap: "wrap" }}>
+              {role.systems.map((s, i) => (
+                <Tag key={i} text={s} color={role.color} bg={`${role.color}12`} />
+              ))}
+            </div>
+          </div>
+
+          {/* Auto Targets */}
+          {role.autoTargets && (
+            <div style={{ marginTop: 10 }}>
+              <div style={{ fontSize: 10, letterSpacing: 1.5, color: "#999", fontWeight: 700, marginBottom: 5, textTransform: "uppercase" }}>⚡ 自動化目標</div>
+              <div style={{ display: "flex", flexWrap: "wrap" }}>
+                {role.autoTargets.map((a, i) => (
+                  <Tag key={i} text={a} color="#c62828" bg="#fce4ec" />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TimelinePanel() {
+  return (
+    <div style={{
+      maxWidth: 900,
+      margin: "32px auto 0",
+      background: "#fff",
+      border: "1.5px solid #e0e0e0",
+      borderRadius: 14,
+      overflow: "hidden",
+      fontFamily: "'Noto Sans TC', sans-serif",
+    }}>
+      <div style={{ background: "#1a1a2e", padding: "14px 24px" }}>
+        <div style={{ color: "#e8c547", fontSize: 11, letterSpacing: 2, fontWeight: 700 }}>CLAUDE COWORK 時間軸</div>
+        <div style={{ color: "#fff", fontSize: 14, marginTop: 2 }}>各節點 Claude 介入的時機</div>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 0 }}>
+        {TIMELINE.map((t, i) => (
+          <div key={i} style={{
+            padding: "16px 20px",
+            borderRight: i % 2 === 0 ? "1px solid #f0f0f0" : "none",
+            borderBottom: i < 2 ? "1px solid #f0f0f0" : "none",
+          }}>
+            <div style={{
+              display: "inline-block",
+              background: t.color,
+              color: "#fff",
+              borderRadius: 5,
+              padding: "3px 10px",
+              fontSize: 11,
+              fontWeight: 700,
+              marginBottom: 10,
+            }}>{t.phase}</div>
+            <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+              {t.tasks.map((task, j) => (
+                <li key={j} style={{
+                  fontSize: 12,
+                  color: "#444",
+                  marginBottom: 5,
+                  display: "flex",
+                  gap: 6,
+                  alignItems: "flex-start",
+                }}>
+                  <span style={{ color: t.color, flexShrink: 0 }}>•</span>
+                  {task}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── MAIN ──────────────────────────────────────────────────────
+function OrgChart() {
+  const [exp, setExp] = useState({ ceo: true });
+  const toggle = (id) => setExp(p => ({ ...p, [id]: !p[id] }));
+
+  const ceo = ROLES.find(r => r.id === "ceo");
+  const children = ROLES.filter(r => r.id !== "ceo");
+
+  return (
+    <div style={{
+      minHeight: "100vh",
+      background: "#f4f3ef",
+      padding: "28px 16px 60px",
+      fontFamily: "'Noto Sans TC', sans-serif",
+    }}>
+      <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+      {/* Header */}
+      <div style={{ textAlign: "center", marginBottom: 28 }}>
+        <div style={{ fontSize: 11, letterSpacing: 4, color: "#aaa", fontWeight: 700, marginBottom: 4 }}>大綠地家具 DA LÜDI</div>
+        <div style={{ fontSize: 24, fontWeight: 700, color: "#1a1a2e", marginBottom: 4 }}>組織架構 × 工作節點 × Claude Cowork</div>
+        <div style={{ fontSize: 11, color: "#aaa" }}>
+          🤖 紅色節點 = Claude 可介入 cowork ｜ ⚡ 自動化目標 ｜ 點擊展開
+        </div>
+      </div>
+
+      {/* CEO */}
+      <div style={{ display: "flex", justifyContent: "center", marginBottom: 0 }}>
+        <RoleCard role={ceo} expanded={!!exp.ceo} onToggle={() => toggle("ceo")} isCEO />
+      </div>
+
+      {/* Vertical stem */}
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <div style={{ width: 2, height: 28, background: "#e8c547" }} />
+      </div>
+
+      {/* Horizontal bar */}
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <div style={{ width: "min(95%, 1800px)", height: 2, background: "#ddd" }} />
+      </div>
+
+      {/* Children */}
+      <div style={{
+        display: "flex",
+        flexWrap: "wrap",
+        justifyContent: "center",
+        gap: 18,
+        marginTop: 0,
+      }}>
+        {children.map(role => (
+          <div key={role.id} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div style={{ width: 2, height: 28, background: role.accent + "99" }} />
+            <RoleCard role={role} expanded={!!exp[role.id]} onToggle={() => toggle(role.id)} />
+          </div>
+        ))}
+      </div>
+
+      {/* Timeline */}
+      <TimelinePanel />
+
+      {/* Legend */}
+      <div style={{
+        maxWidth: 700,
+        margin: "20px auto 0",
+        background: "#fff",
+        border: "1px solid #e0e0e0",
+        borderRadius: 10,
+        padding: "14px 20px",
+        fontSize: 11.5,
+        color: "#666",
+      }}>
+        <div style={{ fontWeight: 700, color: "#333", marginBottom: 8 }}>圖例說明</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+          <span>🤖 = Claude 可直接 cowork 的節點</span>
+          <span>⚡ = 可用 Make/Zapier 自動化的節點</span>
+          <span>◆ = 人工執行節點</span>
+          <span>紅色標籤 = 建議介入時間點</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const { useState } = React;
+
+const COMPANY_O = "成為台灣商業空間首選戶外家具夥伴，建立可持續複製的系統化組織";
+
+const COMPANY_KRS = [
+  { kr: "全年營業額達3,600萬（月均300萬）", target: "3,600萬", unit: "營業額", accept: "2,880萬（80%）" },
+  { kr: "年底帳上現金流達900萬（現約450萬）", target: "900萬", unit: "現金", accept: "720萬" },
+  { kr: "ToC年底單月貢獻達100萬", target: "100萬/月", unit: "ToC", accept: "70萬" },
+  { kr: "CEO工作中可授權比例達60%（現約20%）", target: "60%", unit: "去依賴", accept: "50%" },
+  { kr: "全部門SOP文件化完成率100%", target: "100%", unit: "系統化", accept: "80%" },
+];
+
+const QUARTERS = [
+  {
+    id: "q2",
+    label: "Q2",
+    period: "4–6月",
+    theme: "打地基",
+    color: "#e53935",
+    desc: "人員到位、流程建立、展間開幕",
+    byDept: [
+      {
+        dept: "CEO",
+        items: [
+          "完成財務/運營交接錄音→SOP文件化",
+          "定價流程工具建立（Google Sheet自動算）",
+          "品牌標籤 & 防塵雨罩方案確認",
+          "4/7 正航ERP廠商會議決策",
+          "ToC策略確認（爸爸IP + 廣告方向）",
+        ],
+      },
+      {
+        dept: "財務",
+        items: [
+          "到職：學習現有ERP高格亞翼",
+          "現金流日報中繼工作台建立（Google Sheet）",
+          "銀行多帳戶餘額看板",
+          "廣告ROAS數據架構建立（Notion→Make→報表）",
+          "產品資料庫工具初版（取代手打貨代文件）",
+        ],
+      },
+      {
+        dept: "營運",
+        items: [
+          "【最優先】倉庫舊存清空+新存倉位定位",
+          "B2B/B2C工作流程拆分完成",
+          "請假系統數位化（一週內完成）",
+          "在途貨追蹤表建立（Google Sheet，業務可查）",
+          "5月台北展間開幕協調",
+        ],
+      },
+      {
+        dept: "行銷",
+        items: [
+          "5月台北展間：設計師邀請名單+活動設計",
+          "B2B電子報第1-2期發送",
+          "Prompt工具包建立（降低AI使用門檻）",
+          "ToC廣告漏斗架構規劃（爸爸IP）",
+          "大綠地好友計劃啟動",
+        ],
+      },
+      {
+        dept: "銷售",
+        items: [
+          "北台灣設計師開發（BNI+展間）",
+          "在途貨查詢工具上線→業務確認時間從半天→5分鐘",
+          "日報數據來源標記落實（計算ROAS用）",
+          "舊客回訪：每週10筆，新客開發：每週3筆",
+        ],
+      },
+    ],
+  },
+  {
+    id: "q3",
+    label: "Q3",
+    period: "7–9月",
+    theme: "提速",
+    color: "#f57c00",
+    desc: "系統深化、ToC起量、正航準備",
+    byDept: [
+      {
+        dept: "CEO",
+        items: [
+          "印尼官網初版規劃 & 外銷產品定義",
+          "ToC柚木新產品設計方向確定",
+          "業務手機查詢介面（輕量Web App）評估上線",
+          "正航ERP資料整理啟動（財務主導）",
+          "Q2 OKR review & Q3目標校正",
+        ],
+      },
+      {
+        dept: "財務",
+        items: [
+          "ROAS自動計算報表完成",
+          "產品資料庫工具：點選產品→自動產出貨代文件",
+          "正航ERP資料遷移準備（清帳/整理歷史資料）",
+          "內外帳整合評估啟動",
+          "薪資計算模組（毛利提成+特價品2%）建立",
+        ],
+      },
+      {
+        dept: "營運",
+        items: [
+          "進銷存×Shopify自動同步（Make）上線",
+          "低庫存自動通知採購機制",
+          "印尼貨櫃週期優化（從雙月小櫃→合理節奏）",
+          "師傅電子工單系統",
+          "安全庫存計算模型建立（基於歷史銷售數據）",
+        ],
+      },
+      {
+        dept: "行銷",
+        items: [
+          "ToC廣告漏斗跑起來（爸爸IP內容+廣告投放）",
+          "B2B電子報第3-4期",
+          "LINE@ B2B/B2C分群推播策略執行",
+          "ToC月營業額目標：50萬",
+          "數據看板：各渠道轉換率可視化",
+        ],
+      },
+      {
+        dept: "銷售",
+        items: [
+          "台北展間設計師轉換跟進",
+          "定製品報價流程：業務自行用工具算，不等CEO",
+          "ToC業務助理需求評估（視量決定是否招聘）",
+        ],
+      },
+    ],
+  },
+  {
+    id: "q4",
+    label: "Q4",
+    period: "10–12月",
+    theme: "收割+換軌",
+    color: "#1565c0",
+    desc: "正航上線、ToC衝刺、年度收尾",
+    byDept: [
+      {
+        dept: "CEO",
+        items: [
+          "正航ERP上線監控（財務主導，CEO確認里程碑）",
+          "2027計畫制定（印尼/中國布套工作室）",
+          "年度OKR達成率review",
+          "印尼外銷：第一批詢價或展覽評估",
+          "ToC業務助理決策（招1-2人or繼續觀察）",
+        ],
+      },
+      {
+        dept: "財務",
+        items: [
+          "正航ERP：10-11月上線，12月全員使用",
+          "1月新年度正式跑正航",
+          "全年財務報表產出",
+          "帳上現金流確認是否達900萬目標",
+          "2027預算規劃",
+        ],
+      },
+      {
+        dept: "營運",
+        items: [
+          "正航ERP切換：倉儲模組接軌",
+          "全部門SOP文件最終版確認",
+          "年底庫存盤點",
+          "印尼貨櫃Q1 2027規劃",
+        ],
+      },
+      {
+        dept: "行銷",
+        items: [
+          "ToC衝刺：目標年底單月100萬",
+          "年底促銷活動設計",
+          "2027行銷策略規劃",
+          "全年ROAS分析報告",
+        ],
+      },
+      {
+        dept: "銷售",
+        items: [
+          "Q4大單衝刺（B2B年底預算用完潮）",
+          "2027客戶開發計畫",
+          "ToC轉換率全年回顧",
+        ],
+      },
+    ],
+  },
+];
+
+const DEPT_OKRS = [
+  {
+    dept: "財務",
+    color: "#4fc3f7",
+    O: "建立透明、可追蹤的財務數字系統，讓決策有數據依據",
+    KRs: [
+      "現金流日報準確率100%（每日更新）",
+      "廣告ROAS報表每月自動產出",
+      "正航ERP 12月全員上線",
+      "產品資料庫工具：貨代文件產出時間從2小時→10分鐘",
+    ],
+  },
+  {
+    dept: "營運",
+    color: "#81c784",
+    O: "建立從採購到出貨的可視化系統，讓每一件貨的狀態清晰可查",
+    KRs: [
+      "Q2倉庫舊存清空，新存倉位定位完成",
+      "在途貨追蹤：業務確認到貨時間從半天→5分鐘",
+      "Shopify庫存同步：誤差率<1%",
+      "全部門SOP文件化100%完成",
+    ],
+  },
+  {
+    dept: "行銷",
+    color: "#f48fb1",
+    O: "建立B2B設計師認知 + ToC品牌漏斗，讓大綠地不只是戶外家具",
+    KRs: [
+      "ToB電子報訂閱人數成長50%",
+      "5月展間活動：到場設計師≥30人",
+      "ToC年底單月營業額達100萬",
+      "爸爸IP廣告ROI正向（Q3開始追蹤）",
+    ],
+  },
+  {
+    dept: "銷售",
+    color: "#ffb74d",
+    O: "提升B2B大單轉換速度，同時建立ToC基礎客群",
+    KRs: [
+      "全年業績達2,880萬（公司目標80%）",
+      "設計師/工程商新客開發：每週3筆落實",
+      "定製品報價：業務自行完成率>80%（不等CEO）",
+      "客戶轉介率（好友計劃）：月均≥2筆",
+    ],
+  },
+];
+
+// ─── UI ────────────────────────────────────────────────────────
+function KRRow({ kr, accept }) {
+  return (
+    <div style={{
+      display: "flex", alignItems: "flex-start", gap: 8,
+      marginBottom: 8, fontSize: 13, color: "#333", lineHeight: 1.5,
+    }}>
+      <span style={{ color: "#e8c547", fontWeight: 700, flexShrink: 0, marginTop: 1 }}>KR</span>
+      <div>
+        {kr}
+        {accept && <span style={{
+          marginLeft: 8, fontSize: 11, color: "#888",
+          background: "#f5f5f5", borderRadius: 3, padding: "1px 6px",
+        }}>可接受：{accept}</span>}
+      </div>
+    </div>
+  );
+}
+
+function CompanyOKR() {
+  return (
+    <div style={{
+      background: "#1a1a2e", borderRadius: 14, padding: "22px 28px",
+      maxWidth: 900, margin: "0 auto 28px", fontFamily: "'Noto Sans TC', sans-serif",
+    }}>
+      <div style={{ fontSize: 10, letterSpacing: 3, color: "#e8c547", fontWeight: 700, marginBottom: 6 }}>
+        大綠地 2026 北極星 OBJECTIVE
+      </div>
+      <div style={{ fontSize: 16, color: "#fff", fontWeight: 600, marginBottom: 18, lineHeight: 1.5 }}>
+        {COMPANY_O}
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 10 }}>
+        {COMPANY_KRS.map((k, i) => (
+          <div key={i} style={{
+            background: "rgba(255,255,255,0.07)", borderRadius: 8,
+            padding: "12px 14px", borderLeft: "3px solid #e8c547",
+          }}>
+            <div style={{ fontSize: 11, color: "#e8c547", fontWeight: 700, marginBottom: 4 }}>{k.unit}</div>
+            <div style={{ fontSize: 13, color: "#fff", lineHeight: 1.4, marginBottom: 6 }}>{k.kr}</div>
+            <div style={{ fontSize: 11, color: "#aaa" }}>目標：{k.target}</div>
+            <div style={{ fontSize: 11, color: "#888" }}>底線：{k.accept}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function QuarterCard({ q, expanded, onToggle }) {
+  return (
+    <div style={{
+      background: "#fff", border: `2px solid ${q.color}22`,
+      borderRadius: 12, overflow: "hidden", marginBottom: 16,
+      fontFamily: "'Noto Sans TC', sans-serif",
+      boxShadow: "0 2px 10px rgba(0,0,0,0.06)",
+    }}>
+      <div
+        onClick={onToggle}
+        style={{
+          background: q.color, padding: "14px 20px", cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <div style={{
+            background: "rgba(255,255,255,0.2)", borderRadius: 8,
+            padding: "4px 12px", fontSize: 18, fontWeight: 700, color: "#fff",
+          }}>{q.label}</div>
+          <div>
+            <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11 }}>{q.period}</div>
+            <div style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>主題：{q.theme}</div>
+          </div>
+          <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 12, marginLeft: 8 }}>{q.desc}</div>
+        </div>
+        <div style={{
+          color: "#fff", fontSize: 18,
+          transform: expanded ? "rotate(180deg)" : "none",
+          transition: "transform 0.3s",
+        }}>▾</div>
+      </div>
+
+      {expanded && (
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+          gap: 0,
+        }}>
+          {q.byDept.map((d, i) => (
+            <div key={i} style={{
+              padding: "16px 18px",
+              borderRight: "1px solid #f0f0f0",
+              borderBottom: "1px solid #f0f0f0",
+            }}>
+              <div style={{
+                display: "inline-block",
+                background: `${q.color}18`,
+                color: q.color,
+                borderRadius: 5,
+                padding: "2px 10px",
+                fontSize: 11,
+                fontWeight: 700,
+                marginBottom: 10,
+              }}>{d.dept}</div>
+              <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+                {d.items.map((item, j) => (
+                  <li key={j} style={{
+                    fontSize: 12.5, color: "#444", marginBottom: 6,
+                    display: "flex", gap: 6, alignItems: "flex-start", lineHeight: 1.4,
+                  }}>
+                    <span style={{ color: q.color, flexShrink: 0, marginTop: 2 }}>•</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DeptOKRs() {
+  return (
+    <div style={{ maxWidth: 900, margin: "28px auto 0", fontFamily: "'Noto Sans TC', sans-serif" }}>
+      <div style={{ fontSize: 11, letterSpacing: 3, color: "#999", fontWeight: 700, marginBottom: 14, textTransform: "uppercase" }}>
+        各部門 OKR
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 14 }}>
+        {DEPT_OKRS.map((d, i) => (
+          <div key={i} style={{
+            background: "#fff", border: `2px solid ${d.color}44`,
+            borderRadius: 10, overflow: "hidden",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+          }}>
+            <div style={{ background: d.color, padding: "10px 16px" }}>
+              <div style={{ color: "#fff", fontWeight: 700, fontSize: 13 }}>{d.dept}</div>
+            </div>
+            <div style={{ padding: "14px 16px" }}>
+              <div style={{
+                fontSize: 12, color: "#555", lineHeight: 1.5,
+                marginBottom: 12, fontStyle: "italic",
+                borderLeft: `3px solid ${d.color}`,
+                paddingLeft: 10,
+              }}>O：{d.O}</div>
+              {d.KRs.map((kr, j) => (
+                <div key={j} style={{
+                  display: "flex", gap: 6, marginBottom: 7,
+                  fontSize: 12.5, color: "#333", alignItems: "flex-start",
+                }}>
+                  <span style={{
+                    background: d.color, color: "#fff",
+                    borderRadius: 3, padding: "0 4px",
+                    fontSize: 10, fontWeight: 700, flexShrink: 0, marginTop: 2,
+                  }}>KR</span>
+                  {kr}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function OKRDashboard() {
+  const [exp, setExp] = useState({ q2: true, q3: false, q4: false });
+  const toggle = id => setExp(p => ({ ...p, [id]: !p[id] }));
+
+  return (
+    <div style={{
+      minHeight: "100vh", background: "#f4f3ef",
+      padding: "28px 16px 60px",
+      fontFamily: "'Noto Sans TC', sans-serif",
+    }}>
+      <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+      {/* Title */}
+      <div style={{ textAlign: "center", marginBottom: 24 }}>
+        <div style={{ fontSize: 11, letterSpacing: 4, color: "#aaa", fontWeight: 700, marginBottom: 4 }}>大綠地家具 2026</div>
+        <div style={{ fontSize: 24, fontWeight: 700, color: "#1a1a2e" }}>年度 OKR × 季度執行路線圖</div>
+        <div style={{ fontSize: 12, color: "#aaa", marginTop: 4 }}>目標3,600萬 / 接受底線2,880萬 / 年底現金900萬</div>
+      </div>
+
+      {/* Company OKR */}
+      <CompanyOKR />
+
+      {/* Quarterly roadmap */}
+      <div style={{ maxWidth: 900, margin: "0 auto" }}>
+        <div style={{ fontSize: 11, letterSpacing: 3, color: "#999", fontWeight: 700, marginBottom: 14, textTransform: "uppercase" }}>
+          季度執行路線圖（Q2-Q4）
+        </div>
+
+        {/* Q1 summary */}
+        <div style={{
+          background: "#fff", border: "1.5px solid #e0e0e0", borderRadius: 10,
+          padding: "14px 20px", marginBottom: 16,
+          display: "flex", alignItems: "center", gap: 14,
+        }}>
+          <div style={{
+            background: "#78909c", color: "#fff", borderRadius: 8,
+            padding: "4px 12px", fontSize: 14, fontWeight: 700, flexShrink: 0,
+          }}>Q1</div>
+          <div>
+            <div style={{ fontSize: 12, color: "#999" }}>1–3月 ｜ 已完成</div>
+            <div style={{ fontSize: 13, color: "#555" }}>招募財務+運營中 / 正航ERP廠商會議（4/7）/ 3月出貨額~211萬</div>
+          </div>
+          <div style={{ marginLeft: "auto", background: "#e8f5e9", color: "#388e3c", borderRadius: 5, padding: "3px 10px", fontSize: 11, fontWeight: 700 }}>
+            進行中
+          </div>
+        </div>
+
+        {QUARTERS.map(q => (
+          <QuarterCard key={q.id} q={q} expanded={!!exp[q.id]} onToggle={() => toggle(q.id)} />
+        ))}
+      </div>
+
+      {/* Dept OKRs */}
+      <DeptOKRs />
+
+      {/* Key constraints */}
+      <div style={{
+        maxWidth: 900, margin: "24px auto 0",
+        background: "#1a1a2e", borderRadius: 12, padding: "18px 24px",
+        fontFamily: "'Noto Sans TC', sans-serif",
+      }}>
+        <div style={{ fontSize: 10, letterSpacing: 3, color: "#e8c547", fontWeight: 700, marginBottom: 10 }}>
+          ⚠️ 今年最關鍵的三個限制條件
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
+          {[
+            { title: "人員交接期 Q2", desc: "財務+運營新人Q2才穩定，這段時間CEO仍需高度介入，不要同時啟動太多新項目" },
+            { title: "正航上線 Q4 摩擦", desc: "10-12月系統切換會消耗財務+運營大量注意力，Q4業務衝刺需要銷售和行銷主扛" },
+            { title: "ToC 100萬是挑戰", desc: "從零到100萬需要漏斗建好+廣告跑通+出貨流程支撐，三者缺一。Q2不啟動Q3就來不及" },
+          ].map((c, i) => (
+            <div key={i} style={{
+              background: "rgba(255,255,255,0.07)", borderRadius: 8,
+              padding: "12px 14px", borderLeft: "3px solid #e53935",
+            }}>
+              <div style={{ color: "#e8c547", fontSize: 12, fontWeight: 700, marginBottom: 6 }}>{c.title}</div>
+              <div style={{ color: "#ccc", fontSize: 12, lineHeight: 1.5 }}>{c.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+function App() {
+  const [page, setPage] = React.useState("okr");
+  return (
+    <div>
+      <nav>
+        <span className="nav-brand">大綠地 2026</span>
+        <button className={"nav-btn" + (page==="okr" ? " active" : "")} onClick={()=>setPage("okr")}>OKR 路線圖</button>
+        <button className={"nav-btn" + (page==="org" ? " active" : "")} onClick={()=>setPage("org")}>組織架構</button>
+      </nav>
+      {page === "okr" ? <OKRDashboard /> : <OrgChart />}
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+
+</script>
+</body>
+</html>
