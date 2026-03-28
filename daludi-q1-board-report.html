@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大綠地 2026 Q1 董事會報告</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --gold: #c9a84c;
+    --gold-light: #f0d98a;
+    --muted: #666;
+    --line: #e0ddd6;
+    --bg: #faf9f6;
+    --red: #c62828;
+    --green: #2e7d32;
+    --blue: #1565c0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 40px;
+  }
+
+  /* ── HEADER ── */
+  .report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 20px;
+    margin-bottom: 36px;
+  }
+  .brand { font-size: 11px; letter-spacing: 4px; color: var(--muted); font-weight: 500; margin-bottom: 4px; }
+  .report-title { font-size: 28px; font-weight: 900; letter-spacing: -0.5px; }
+  .report-meta { text-align: right; font-size: 12px; color: var(--muted); line-height: 1.8; }
+  .report-meta strong { color: var(--ink); }
+
+  /* ── SECTION ── */
+  .section { margin-bottom: 36px; }
+  .section-title {
+    font-size: 10px; letter-spacing: 3px; font-weight: 700;
+    color: var(--muted); text-transform: uppercase;
+    border-left: 3px solid var(--gold); padding-left: 10px;
+    margin-bottom: 16px;
+  }
+
+  /* ── METRIC GRID ── */
+  .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .metric-card {
+    background: #fff;
+    border: 1.5px solid var(--line);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .metric-label { font-size: 10px; color: var(--muted); letter-spacing: 1.5px; font-weight: 600; margin-bottom: 4px; }
+  .metric-value { font-size: 22px; font-weight: 700; }
+  .metric-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .up { color: var(--green); }
+  .down { color: var(--red); }
+
+  /* ── REVENUE TABLE ── */
+  .rev-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .rev-table th {
+    background: var(--ink); color: #fff;
+    padding: 9px 12px; text-align: left;
+    font-size: 10px; letter-spacing: 1.5px; font-weight: 600;
+  }
+  .rev-table td { padding: 9px 12px; border-bottom: 1px solid var(--line); }
+  .rev-table tr:hover td { background: #f5f3ee; }
+  .rev-table .highlight td { background: #fffbea; font-weight: 600; }
+  .badge {
+    display: inline-block; border-radius: 3px;
+    padding: 1px 7px; font-size: 10px; font-weight: 700;
+  }
+  .badge-green { background: #e8f5e9; color: var(--green); }
+  .badge-yellow { background: #fff9c4; color: #f57f17; }
+  .badge-red { background: #ffebee; color: var(--red); }
+  .badge-blue { background: #e3f2fd; color: var(--blue); }
+
+  /* ── BREAKEVEN SCENARIOS ── */
+  .scenario-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  .scenario-card {
+    border-radius: 8px; padding: 14px 12px;
+    border: 1.5px solid var(--line);
+    background: #fff;
+  }
+  .scenario-card.target { border-color: var(--gold); background: #fffdf4; }
+  .scenario-rev { font-size: 16px; font-weight: 800; margin-bottom: 8px; }
+  .scenario-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px; color: var(--muted); }
+  .scenario-row span:last-child { color: var(--ink); font-weight: 500; }
+  .scenario-divider { border: none; border-top: 1px solid var(--line); margin: 8px 0; }
+  .scenario-profit { font-size: 13px; font-weight: 700; margin-top: 6px; }
+
+  /* ── SALARY STRATEGY ── */
+  .salary-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .salary-table th {
+    background: #f0ede7; color: var(--ink);
+    padding: 8px 12px; text-align: left;
+    font-size: 10px; letter-spacing: 1.5px; font-weight: 700;
+    border-bottom: 2px solid var(--line);
+  }
+  .salary-table td { padding: 8px 12px; border-bottom: 1px solid var(--line); }
+  .salary-table .total td { font-weight: 700; background: #f0ede7; }
+  .editable { background: #fffde7; border-bottom: 1.5px dashed #f9a825 !important; }
+
+  /* ── TIMELINE ── */
+  .timeline { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .tl-card { background: #fff; border: 1.5px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .tl-header { padding: 10px 14px; font-weight: 700; font-size: 13px; color: #fff; }
+  .tl-body { padding: 12px 14px; }
+  .tl-item { font-size: 12px; color: #444; margin-bottom: 6px; display: flex; gap: 6px; }
+  .tl-item::before { content: "▸"; color: var(--gold); flex-shrink: 0; }
+
+  /* ── FOOTER ── */
+  .report-footer {
+    margin-top: 40px; padding-top: 16px;
+    border-top: 1px solid var(--line);
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--muted);
+  }
+
+  /* ── NOTE BOX ── */
+  .note-box {
+    background: #fff8e1; border-left: 3px solid var(--gold);
+    padding: 10px 14px; border-radius: 0 6px 6px 0;
+    font-size: 12px; color: #555; margin-top: 12px;
+  }
+  .note-box strong { color: var(--ink); }
+
+  /* PRINT */
+  @media print {
+    body { background: #fff; }
+    .page { padding: 24px 28px; }
+    .no-print { display: none; }
+  }
+
+  /* Editable inputs */
+  input[type=number] {
+    border: none; border-bottom: 1.5px dashed #f9a825;
+    background: #fffde7; width: 70px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 13px; color: var(--ink); padding: 1px 4px;
+    text-align: right;
+  }
+  input[type=number]:focus { outline: none; border-bottom-color: var(--gold); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="report-header">
+    <div>
+      <div class="brand">DA LÜDI FURNITURE ／ 大綠地家具</div>
+      <div class="report-title">2026 Q1 董事會報告</div>
+    </div>
+    <div class="report-meta">
+      <div>報告日期：<strong>2026年4月初</strong></div>
+      <div>報告人：<strong>妙珊</strong></div>
+      <div>版本：<strong>V1.0</strong></div>
+    </div>
+  </div>
+
+  <!-- Q1 PERFORMANCE -->
+  <div class="section">
+    <div class="section-title">Q1 營業額回顧</div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <div class="metric-label">1月</div>
+        <div class="metric-value">391萬</div>
+        <div class="metric-sub up">↑ YoY +126%</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">2月</div>
+        <div class="metric-value">93萬</div>
+        <div class="metric-sub down">農曆年 + 庫存滿倉</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">3月（預估）</div>
+        <div class="metric-value">211萬</div>
+        <div class="metric-sub up">↑ YoY +20%</div>
+      </div>
+      <div class="metric-card" style="border-color: var(--gold);">
+        <div class="metric-label">Q1 合計</div>
+        <div class="metric-value" style="color:var(--gold);">695萬</div>
+        <div class="metric-sub">打平點：250萬/月</div>
+      </div>
+    </div>
+    <div class="note-box">
+      <strong>2月說明：</strong>農曆年假期間倉庫無法出貨，加上去年Q4大單已清完（業務離職前集中close），非結構性下滑。<br>
+      <strong>Q1結構性問題：</strong>倉庫空間滿載導致2月無法進貨，已列為Q2首要任務。
+    </div>
+  </div>
+
+  <!-- SALARY STRATEGY -->
+  <div class="section">
+    <div class="section-title">新進人員薪資策略</div>
+    <table class="salary-table">
+      <thead>
+        <tr>
+          <th>職位</th>
+          <th>預計到職</th>
+          <th>月薪（NTD）</th>
+          <th>全年人力成本</th>
+          <th>主要職責</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>財務</strong></td>
+          <td>6月中（財務45k）</td>
+          <td class="editable"><input type="number" id="sal_finance" value="45000" onchange="recalc()">元</td>
+          <td id="yr_finance">—</td>
+          <td>ERP轉型主導、現金流管理、ROAS報表</td>
+        </tr>
+        <tr>
+          <td><strong>營運特助</strong></td>
+          <td>4月中（行銷45k替換現行銷）</td>
+          <td class="editable"><input type="number" id="sal_ops" value="50000" onchange="recalc()">元</td>
+          <td id="yr_ops">—</td>
+          <td>倉庫盤點、B2B/B2C拆分、5月展間協調</td>
+        </tr>
+        <tr class="total">
+          <td colspan="2"><strong>新增人力月成本合計</strong></td>
+          <td id="total_monthly"><strong>—</strong></td>
+          <td id="total_yearly"><strong>—</strong></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="note-box">
+      <strong>薪資邏輯：</strong>業務薪資含毛利提成 + 特價品成交金額2%額外獎金（另計）。新進行政人員以固定薪為主，穩定期後評估績效加薪。
+    </div>
+  </div>
+
+  <!-- BREAKEVEN ANALYSIS -->
+  <div class="section">
+    <div class="section-title">損益打平分析：各月營業額情境</div>
+    
+    <div style="margin-bottom: 16px; font-size: 12px; color: var(--muted);">
+      成本假設：現有固定成本 
+      <input type="number" id="fixed_existing" value="117" onchange="recalc()">萬/月，
+      毛利率 
+      <input type="number" id="gm_rate" value="60" onchange="recalc()">%，
+      新人月薪合計（到職後）已含在下方計算中
+    </div>
+
+    <div class="scenario-grid" id="scenario-grid">
+      <!-- Generated by JS -->
+    </div>
+    
+    <div class="note-box" style="margin-top: 12px;">
+      <strong>成本結構說明：</strong>固定成本126萬 = 正常化後月均費用（已含利息19.4萬/月、薪資56.5萬基礎）。<br>
+2025年虧損主因：一次性支出約201萬（屋頂100萬+水池55萬+顧問36萬+其他）+ 利息233萬/年，2026年一次性項目大幅減少。<br>
+<strong>Q2打平（行銷+運營到位）：≈223萬｜Q3+打平（三人齊）：≈231萬</strong>
+    </div>
+  </div>
+
+  <!-- REVENUE TABLE -->
+  <div class="section">
+    <div class="section-title">歷史趨勢與2026目標</div>
+    <table class="rev-table">
+      <thead>
+        <tr>
+          <th>年度</th>
+          <th>全年營業額</th>
+          <th>年成長</th>
+          <th>月均</th>
+          <th>備註</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2024</td>
+          <td>2,293萬</td>
+          <td>—</td>
+          <td>191萬</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>2025</td>
+          <td>2,717萬</td>
+          <td><span class="badge badge-green">+18.5%</span></td>
+          <td>226萬</td>
+          <td>Q4業務離職前集中close大單</td>
+        </tr>
+        <tr class="highlight">
+          <td><strong>2026 目標</strong></td>
+          <td><strong>3,600萬</strong></td>
+          <td><span class="badge badge-blue">+32.5%</span></td>
+          <td><strong>300萬</strong></td>
+          <td>含ToC年底100萬 + 台北展間效益</td>
+        </tr>
+        <tr>
+          <td>2026 底線（80%）</td>
+          <td>2,880萬</td>
+          <td><span class="badge badge-yellow">+6%</span></td>
+          <td>240萬</td>
+          <td>可接受</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- QUARTERLY ROADMAP -->
+  <div class="section">
+    <div class="section-title">2026 季度重點</div>
+    <div class="timeline">
+      <div class="tl-card">
+        <div class="tl-header" style="background:#e53935;">Q2（4–6月）｜打地基</div>
+        <div class="tl-body">
+          <div class="tl-item">倉庫舊存清空、新存定位</div>
+          <div class="tl-item">財務/運營新人到職 & onboarding</div>
+          <div class="tl-item">5月台北展間開幕</div>
+          <div class="tl-item">B2B/B2C流程拆分完成</div>
+          <div class="tl-item">在途貨追蹤工具上線</div>
+          <div class="tl-item">ToC廣告漏斗規劃</div>
+        </div>
+      </div>
+      <div class="tl-card">
+        <div class="tl-header" style="background:#f57c00;">Q3（7–9月）｜提速</div>
+        <div class="tl-body">
+          <div class="tl-item">Shopify庫存自動同步</div>
+          <div class="tl-item">ToC廣告跑起來（爸爸IP）</div>
+          <div class="tl-item">ROAS看板自動化</div>
+          <div class="tl-item">正航ERP資料整理啟動</div>
+          <div class="tl-item">ToC月目標：50萬</div>
+          <div class="tl-item">印尼官網初版規劃</div>
+        </div>
+      </div>
+      <div class="tl-card">
+        <div class="tl-header" style="background:#1565c0;">Q4（10–12月）｜換軌</div>
+        <div class="tl-body">
+          <div class="tl-item">正航ERP 10-11月上線</div>
+          <div class="tl-item">ToC衝刺：目標單月100萬</div>
+          <div class="tl-item">年底現金流目標900萬</div>
+          <div class="tl-item">2027計畫制定</div>
+          <div class="tl-item">全員SOP文件化完成</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="report-footer">
+    <div>大綠地家具股份有限公司 ／ 機密文件，僅供董事會內部使用</div>
+    <div>2026年4月 ／ 製作：妙珊</div>
+  </div>
+
+  <!-- PRINT BUTTON -->
+  <div style="text-align:center; margin-top: 28px;" class="no-print">
+    <button onclick="window.print()" style="
+      background: #1a1a2e; color: #fff; border: none;
+      padding: 12px 32px; border-radius: 6px; font-size: 14px;
+      font-family: 'Noto Sans TC', sans-serif; cursor: pointer;
+      letter-spacing: 1px; font-weight: 600;
+    ">🖨 列印報告</button>
+  </div>
+
+</div>
+
+<script>
+const SCENARIOS = [
+  { rev: 180, label: "低", adSpend: 5, badge: "badge-red" },
+  { rev: 200, label: "保守", adSpend: 8, badge: "badge-yellow" },
+  { rev: 250, label: "打平", adSpend: 12, badge: "badge-yellow" },
+  { rev: 280, label: "合理", adSpend: 15, badge: "badge-green" },
+  { rev: 300, label: "目標", adSpend: 20, badge: "badge-blue", isTarget: true },
+];
+
+function recalc() {
+  const salMarketing = parseInt(document.getElementById('sal_finance').value) || 50000;
+  const salOps = parseInt(document.getElementById('sal_ops').value) || 50000;
+  const fixedBase = parseInt(document.getElementById('fixed_existing').value) * 10000 || 1260000;
+  const gmRate = parseInt(document.getElementById('gm_rate').value) / 100 || 0.60;
+
+  // base includes existing salary+interest+rent; new hires are additive net of replacing old marketing
+  const marketingNetAdd = salMarketing - 36500; // replacing old 36.5k marketing
+  const newHireMonthly = marketingNetAdd + salOps; // COO is fully new
+  const totalFixed = fixedBase + newHireMonthly;
+
+  // Update salary table
+  document.getElementById('yr_finance').textContent = `${(salMarketing / 10000).toFixed(1)}萬/月（替換舊行銷36.5k）`;
+  document.getElementById('yr_ops').textContent = `${(salOps / 10000).toFixed(1)}萬/月（全新職位）`;
+  document.getElementById('total_monthly').innerHTML = `<strong>淨增${(newHireMonthly / 10000).toFixed(1)}萬/月</strong>`;
+  const yrTotal = (marketingNetAdd * 9 + salOps * 9) / 10000;
+  document.getElementById('total_yearly').innerHTML = `<strong>約${yrTotal.toFixed(1)}萬（全年合計）</strong>`;
+
+  // Render scenarios
+  const grid = document.getElementById('scenario-grid');
+  grid.innerHTML = SCENARIOS.map(s => {
+    const rev = s.rev * 10000;
+    const gross = rev * gmRate;
+    const adCost = s.adSpend * 10000;
+    const outsource = adCost * 0.15;
+    const totalCost = totalFixed + adCost + outsource;
+    const profit = gross - totalCost;
+    const profitWan = (profit / 10000).toFixed(1);
+    const isProfit = profit >= 0;
+
+    return `
+      <div class="scenario-card${s.isTarget ? ' target' : ''}">
+        <div class="scenario-rev" style="color:${s.isTarget ? '#c9a84c' : '#1a1a2e'}">${s.rev}萬</div>
+        <span class="badge ${s.badge}">${s.label}</span>
+        <hr class="scenario-divider">
+        <div class="scenario-row"><span>毛利</span><span>${(gross/10000).toFixed(0)}萬</span></div>
+        <div class="scenario-row"><span>固定成本</span><span>${(totalFixed/10000).toFixed(0)}萬</span></div>
+        <div class="scenario-row"><span>廣告投放</span><span>${s.adSpend}萬</span></div>
+        <div class="scenario-row"><span>外包投放費</span><span>${(outsource/10000).toFixed(1)}萬</span></div>
+        <hr class="scenario-divider">
+        <div class="scenario-profit" style="color:${isProfit ? '#2e7d32' : '#c62828'}">
+          ${isProfit ? '盈餘' : '虧損'} ${Math.abs(profitWan)}萬
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+recalc();
+</script>
+</body>
+</html>

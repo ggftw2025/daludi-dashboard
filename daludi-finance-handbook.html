@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>大綠地 財務主管月度監控手冊</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a2e; --gold: #c9a84c; --muted: #666;
+  --line: #e0ddd6; --bg: #faf9f6;
+  --red: #c62828; --green: #2e7d32; --blue: #1565c0;
+  --warn: #f57c00;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); color: var(--ink); font-size: 14px; line-height: 1.6; }
+.page { max-width: 960px; margin: 0 auto; padding: 48px 40px; }
+
+.doc-header { border-bottom: 3px solid var(--ink); padding-bottom: 18px; margin-bottom: 36px; display: flex; justify-content: space-between; align-items: flex-end; }
+.doc-title { font-size: 22px; font-weight: 900; }
+.doc-sub { font-size: 11px; letter-spacing: 3px; color: var(--muted); margin-bottom: 4px; }
+.doc-meta { font-size: 11px; color: var(--muted); text-align: right; line-height: 1.8; }
+
+.section { margin-bottom: 36px; }
+.section-title { font-size: 10px; letter-spacing: 3px; font-weight: 700; color: var(--muted); text-transform: uppercase; border-left: 3px solid var(--gold); padding-left: 10px; margin-bottom: 16px; }
+
+/* Cost structure */
+.cost-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.cost-box { background: #fff; border: 1.5px solid var(--line); border-radius: 10px; overflow: hidden; }
+.cost-box-header { background: var(--ink); color: #fff; padding: 10px 16px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; }
+.cost-box-header.red { background: var(--red); }
+.cost-box-header.blue { background: var(--blue); }
+.cost-box-header.green { background: var(--green); }
+.cost-table { width: 100%; border-collapse: collapse; }
+.cost-table td { padding: 8px 14px; border-bottom: 1px solid var(--line); font-size: 13px; }
+.cost-table td:last-child { text-align: right; font-weight: 600; }
+.cost-table .subtotal td { background: #f5f3ee; font-weight: 700; }
+.cost-table .total td { background: var(--ink); color: #fff; font-weight: 700; }
+
+/* Monthly dashboard */
+.month-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.month-table th { background: var(--ink); color: #fff; padding: 9px 10px; text-align: center; font-size: 10px; letter-spacing: 1px; }
+.month-table th:first-child { text-align: left; }
+.month-table td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: center; }
+.month-table td:first-child { text-align: left; font-weight: 500; }
+.month-table .phase { background: #f5f3ee; font-weight: 700; font-size: 11px; color: var(--muted); }
+.month-table input { width: 70px; border: none; border-bottom: 1.5px dashed #f9a825; background: #fffde7; font-family: 'Noto Sans TC', sans-serif; font-size: 12px; text-align: right; padding: 1px 3px; }
+.month-table input:focus { outline: none; }
+.cell-calc { font-size: 11px; color: var(--muted); }
+.highlight-row td { background: #fffbea; }
+
+/* Milestones */
+.milestone-list { list-style: none; }
+.milestone-item { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line); align-items: flex-start; }
+.milestone-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.milestone-date { font-size: 11px; color: var(--muted); min-width: 70px; flex-shrink: 0; margin-top: 2px; }
+.milestone-text { font-size: 13px; flex: 1; }
+.milestone-tag { display: inline-block; padding: 1px 7px; border-radius: 3px; font-size: 10px; font-weight: 700; margin-left: 6px; }
+.tag-red { background: #ffebee; color: var(--red); }
+.tag-blue { background: #e3f2fd; color: var(--blue); }
+.tag-gold { background: #fff8e1; color: #e65100; }
+
+/* Alert box */
+.alert { border-radius: 8px; padding: 14px 18px; margin-bottom: 12px; font-size: 13px; display: flex; gap: 12px; }
+.alert-warn { background: #fff3e0; border-left: 4px solid var(--warn); }
+.alert-danger { background: #ffebee; border-left: 4px solid var(--red); }
+.alert-info { background: #e3f2fd; border-left: 4px solid var(--blue); }
+.alert-icon { font-size: 18px; flex-shrink: 0; }
+
+/* Checklist */
+.checklist { list-style: none; }
+.checklist li { padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 13px; display: flex; gap: 10px; align-items: flex-start; }
+.checklist li::before { content: "☐"; font-size: 16px; color: var(--muted); flex-shrink: 0; margin-top: -1px; }
+.check-tag { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 3px; flex-shrink: 0; margin-top: 2px; }
+
+@media print {
+  body { background: #fff; }
+  .page { padding: 20px 24px; }
+  .no-print { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div>
+    <div class="doc-sub">大綠地家具 ／ 財務部內部文件</div>
+    <div class="doc-title">財務主管月度監控手冊</div>
+    <div style="font-size:12px;color:var(--muted);margin-top:4px;">交接用 ／ 每月對數字的完整依據</div>
+  </div>
+  <div class="doc-meta">
+    <div>版本：<strong>2026.04</strong></div>
+    <div>制定：<strong>妙珊 CEO</strong></div>
+    <div>適用對象：<strong>財務主管（到職即啟用）</strong></div>
+  </div>
+</div>
+
+<!-- SECTION 1: COST STRUCTURE -->
+<div class="section">
+  <div class="section-title">01 月度固定成本結構（完整版）</div>
+  <div class="cost-grid">
+    <div class="cost-box">
+      <div class="cost-box-header">人事成本（含勞健退18%）</div>
+      <table class="cost-table">
+        <tr><td>CEO（妙珊）</td><td>—</td></tr>
+        <tr><td>業務 × 2</td><td>底薪合計約10萬</td></tr>
+        <tr><td>行銷（新人）</td><td>50,000</td></tr>
+        <tr><td>COO / 營運特助</td><td>50,000</td></tr>
+        <tr><td>倉儲出貨（Abby）</td><td>依實際</td></tr>
+        <tr><td>工務師傅 × N</td><td>依實際</td></tr>
+        <tr><td>財務（新人）</td><td>45,000（6月中起）</td></tr>
+        <tr class="subtotal"><td>薪資合計</td><td>約56.1萬</td></tr>
+        <tr class="total"><td>含勞健退18%</td><td>約66.2萬</td></tr>
+      </table>
+    </div>
+    <div class="cost-box">
+      <div class="cost-box-header blue">非人事固定成本</div>
+      <table class="cost-table">
+        <tr><td>租金（沙鹿倉庫+展場）</td><td>依合約</td></tr>
+        <tr><td>貸款利息</td><td>依實際</td></tr>
+        <tr><td>印尼辦公室/管理費</td><td>依實際</td></tr>
+        <tr><td>台北展間（5月起）</td><td>依合約</td></tr>
+        <tr><td>水電雜費</td><td>依實際</td></tr>
+        <tr class="subtotal"><td>非人事合計</td><td>約62萬</td></tr>
+        <tr class="total"><td>行銷投放（基本）</td><td>10萬（可浮動）</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div style="margin-top:16px;background:#fff;border:2px solid var(--ink);border-radius:8px;padding:16px 20px;">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+      <div>
+        <div style="font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:4px;">月固定成本合計</div>
+        <div style="font-size:26px;font-weight:900;">129.5萬</div>
+        <div style="font-size:11px;color:var(--muted);">（財務到職後全員）</div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:4px;">損益打平點</div>
+        <div style="font-size:26px;font-weight:900;color:var(--red);">216萬</div>
+        <div style="font-size:11px;color:var(--muted);">毛利率60%下</div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:4px;">2026年底目標現金</div>
+        <div style="font-size:26px;font-weight:900;color:var(--green);">900萬</div>
+        <div style="font-size:11px;color:var(--muted);">現約450-500萬</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: MONTHLY DASHBOARD -->
+<div class="section">
+  <div class="section-title">02 2026 月度損益追蹤表（財務每月填寫）</div>
+  <div class="alert alert-info">
+    <div class="alert-icon">📋</div>
+    <div>此表每月月底前填寫完畢，隔月5日前回報CEO。<strong>黃色欄位</strong>為需手動輸入的數字，其餘自動計算。</div>
+  </div>
+  <table class="month-table">
+    <thead>
+      <tr>
+        <th style="min-width:80px;">月份</th>
+        <th>營業額</th>
+        <th>毛利(48%)</th>
+        <th>人事成本</th>
+        <th>非人事</th>
+        <th>廣告投放</th>
+        <th>一次性支出</th>
+        <th>稅前損益</th>
+        <th>帳上現金</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="phase"><td colspan="9">▸ Q2（4–6月）打地基期</td></tr>
+      <tr id="row_4">
+        <td><strong>4月</strong></td>
+        <td><input type="number" value="200" onchange="recalcRow('4')">萬</td>
+        <td id="gp_4" class="cell-calc">—</td>
+        <td>62萬<br><span style="font-size:10px;color:var(--warn)">+新人首月11萬</span></td>
+        <td>62萬</td>
+        <td><input type="number" value="10" onchange="recalcRow('4')">萬</td>
+        <td><input type="number" value="0" onchange="recalcRow('4')">萬</td>
+        <td id="profit_4" class="cell-calc">—</td>
+        <td><input type="number" value="480" onchange="recalcRow('4')">萬</td>
+      </tr>
+      <tr id="row_5">
+        <td><strong>5月</strong><br><span style="font-size:10px;color:var(--blue)">展間開幕</span></td>
+        <td><input type="number" value="240" onchange="recalcRow('5')">萬</td>
+        <td id="gp_5" class="cell-calc">—</td>
+        <td>75萬</td>
+        <td>62萬</td>
+        <td><input type="number" value="12" onchange="recalcRow('5')">萬</td>
+        <td><input type="number" value="0" onchange="recalcRow('5')">萬</td>
+        <td id="profit_5" class="cell-calc">—</td>
+        <td><input type="number" value="" onchange="recalcRow('5')">萬</td>
+      </tr>
+      <tr id="row_6">
+        <td><strong>6月</strong><br><span style="font-size:10px;color:var(--gold)">財務到職</span></td>
+        <td><input type="number" value="250" onchange="recalcRow('6')">萬</td>
+        <td id="gp_6" class="cell-calc">—</td>
+        <td>75萬</td>
+        <td>62萬</td>
+        <td><input type="number" value="12" onchange="recalcRow('6')">萬</td>
+        <td><input type="number" value="0" onchange="recalcRow('6')">萬</td>
+        <td id="profit_6" class="cell-calc">—</td>
+        <td><input type="number" value="" onchange="recalcRow('6')">萬</td>
+      </tr>
+      <tr class="phase"><td colspan="9">▸ Q3（7–9月）提速期</td></tr>
+      <tr id="row_7">
+        <td><strong>7月</strong><br><span style="font-size:10px;color:var(--red)">⚠️ 現金壓力</span></td>
+        <td><input type="number" value="260" onchange="recalcRow('7')">萬</td>
+        <td id="gp_7" class="cell-calc">—</td>
+        <td>75萬</td>
+        <td>62萬</td>
+        <td><input type="number" value="15" onchange="recalcRow('7')">萬</td>
+        <td><input type="number" value="30" onchange="recalcRow('7')">萬<br><span style="font-size:10px;color:var(--red)">ERP30萬</span></td>
+        <td id="profit_7" class="cell-calc">—</td>
+        <td><input type="number" value="" onchange="recalcRow('7')">萬</td>
+      </tr>
+      <tr id="row_8">
+        <td><strong>8月</strong></td>
+        <td><input type="number" value="250" onchange="recalcRow('8')">萬</td>
+        <td id="gp_8" class="cell-calc">—</td>
+        <td>75萬</td>
+        <td>62萬</td>
+        <td><input type="number" value="15" onchange="recalcRow('8')">萬</td>
+        <td><input type="number" value="0" onchange="recalcRow('8')">萬</td>
+        <td id="profit_8" class="cell-calc">—</td>
+        <td><input type="number" value="" onchange="recalcRow('8')">萬</td>
+      </tr>
+      <tr id="row_9">
+        <td><strong>9月</strong></td>
+        <td><input type="number" value="270" onchange="recalcRow('9')">萬</td>
+        <td id="gp_9" class="cell-calc">—</td>
+        <td>75萬</td>
+        <td>62萬</td>
+        <td><input type="number" value="15" onchange="recalcRow('9')">萬</td>
+        <td><input type="number" value="0" onchange="recalcRow('9')">萬</td>
+        <td id="profit_9" class="cell-calc">—</td>
+        <td><input type="number" value="" onchange="recalcRow('9')">萬</td>
+      </tr>
+      <tr class="phase"><td colspan="9">▸ Q4（10–12月）收割+換軌期</td></tr>
+      <tr id="row_10">
+        <td><strong>10月</strong><br><span style="font-size:10px;color:var(--blue)">正航上線</span></td>
+        <td><input type="number" value="280" onchange="recalcRow('10')">萬</td>
+        <td id="gp_10" class="cell-calc">—</td>
+        <td>75萬</td>
+        <td>62萬</td>
+        <td><input type="number" value="15" onchange="recalcRow('10')">萬</td>
+        <td><input type="number" value="0" onchange="recalcRow('10')">萬</td>
+        <td id="profit_10" class="cell-calc">—</td>
+        <td><input type="number" value="" onchange="recalcRow('10')">萬</td>
+      </tr>
+      <tr id="row_11">
+        <td><strong>11月</strong></td>
+        <td><input type="number" value="300" onchange="recalcRow('11')">萬</td>
+        <td id="gp_11" class="cell-calc">—</td>
+        <td>75萬</td>
+        <td>62萬</td>
+        <td><input type="number" value="15" onchange="recalcRow('11')">萬</td>
+        <td><input type="number" value="0" onchange="recalcRow('11')">萬</td>
+        <td id="profit_11" class="cell-calc">—</td>
+        <td><input type="number" value="" onchange="recalcRow('11')">萬</td>
+      </tr>
+      <tr id="row_12" class="highlight-row">
+        <td><strong>12月</strong><br><span style="font-size:10px;color:var(--green)">年底目標</span></td>
+        <td><input type="number" value="320" onchange="recalcRow('12')">萬</td>
+        <td id="gp_12" class="cell-calc">—</td>
+        <td>75萬</td>
+        <td>62萬</td>
+        <td><input type="number" value="15" onchange="recalcRow('12')">萬</td>
+        <td><input type="number" value="0" onchange="recalcRow('12')">萬</td>
+        <td id="profit_12" class="cell-calc">—</td>
+        <td><input type="number" value="" onchange="recalcRow('12')">萬</td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="font-size:11px;color:var(--muted);margin-top:8px;">
+    * 毛利率預設48%。實際毛利需依每月產品組合調整。B2C產品毛利通常高於B2B。
+  </div>
+</div>
+
+<!-- SECTION 3: KEY ALERTS -->
+<div class="section">
+  <div class="section-title">03 財務預警指標</div>
+  <div class="alert alert-danger">
+    <div class="alert-icon">🚨</div>
+    <div><strong>紅色預警：</strong>帳上現金低於 <strong>300萬</strong> 時，立即通報CEO。7-8月ERP導入期間是最高風險點。</div>
+  </div>
+  <div class="alert alert-warn">
+    <div class="alert-icon">⚠️</div>
+    <div><strong>黃色預警：</strong>連續兩個月營業額低於 <strong>220萬</strong>（低於打平點10%以下），需討論是否調整廣告投放或人力。</div>
+  </div>
+  <div class="alert alert-info">
+    <div class="alert-icon">✅</div>
+    <div><strong>目標達標：</strong>年底帳上現金達 <strong>900萬</strong>，代表現金流翻倍，達成2026年財務目標。</div>
+  </div>
+</div>
+
+<!-- SECTION 4: MONTHLY CHECKLIST -->
+<div class="section">
+  <div class="section-title">04 財務每月例行工作清單</div>
+  <ul class="checklist">
+    <li><span class="check-tag tag-red">週</span> 現金流日報更新（各銀行帳戶餘額）</li>
+    <li><span class="check-tag tag-red">週</span> 應收帳款追蹤（尾款到期提醒業務）</li>
+    <li><span class="check-tag" style="background:#e8f5e9;color:var(--green)">月初</span> 上月廣告費填入損益表（Meta + Google後台抄數字）</li>
+    <li><span class="check-tag" style="background:#e8f5e9;color:var(--green)">月初</span> 上月ROAS計算（新客成交額÷廣告費）→ 回報CEO</li>
+    <li><span class="check-tag" style="background:#e8f5e9;color:var(--green)">月中</span> 薪資計算（底薪 + 業務毛利提成 + 特價品2%獎金）</li>
+    <li><span class="check-tag" style="background:#e8f5e9;color:var(--green)">月底</span> 月報完成 → 隔月5日前回報CEO</li>
+    <li><span class="check-tag tag-blue">季</span> ERP對帳（正航上線後）</li>
+    <li><span class="check-tag tag-blue">季</span> OKR達成率確認（與CEO季度review）</li>
+  </ul>
+</div>
+
+<!-- SECTION 5: KEY MILESTONES -->
+<div class="section">
+  <div class="section-title">05 2026 財務關鍵里程碑</div>
+  <ul class="milestone-list">
+    <li class="milestone-item">
+      <div class="milestone-dot" style="background:var(--red)"></div>
+      <div class="milestone-date">4月初</div>
+      <div class="milestone-text">董事會Q1報告<span class="milestone-tag tag-red">CEO執行</span></div>
+    </li>
+    <li class="milestone-item">
+      <div class="milestone-dot" style="background:var(--warn)"></div>
+      <div class="milestone-date">4月底</div>
+      <div class="milestone-text">現行銷離職，新行銷+COO到位。現金流中性，無重疊成本。</div>
+    </li>
+    <li class="milestone-item">
+      <div class="milestone-dot" style="background:var(--blue)"></div>
+      <div class="milestone-date">5月</div>
+      <div class="milestone-text">台北展間開幕<span class="milestone-tag tag-blue">關注現金消耗</span>展間啟動成本確認</div>
+    </li>
+    <li class="milestone-item">
+      <div class="milestone-dot" style="background:var(--gold)"></div>
+      <div class="milestone-date">6月中</div>
+      <div class="milestone-text">財務主管到職。交接錄音+SOP文件已備妥，月固定成本升至147萬。</div>
+    </li>
+    <li class="milestone-item">
+      <div class="milestone-dot" style="background:var(--red)"></div>
+      <div class="milestone-date">7–8月</div>
+      <div class="milestone-text"><strong>現金流最緊張點</strong>：ERP一次性導入費30萬。帳上現金需維持300萬以上。<span class="milestone-tag tag-red">重點監控</span></div>
+    </li>
+    <li class="milestone-item">
+      <div class="milestone-dot" style="background:var(--blue)"></div>
+      <div class="milestone-date">10–11月</div>
+      <div class="milestone-text">正航ERP正式上線。財務主導切換，業務+倉儲配合。</div>
+    </li>
+    <li class="milestone-item">
+      <div class="milestone-dot" style="background:var(--green)"></div>
+      <div class="milestone-date">12月底</div>
+      <div class="milestone-text"><strong>年度目標：帳上現金900萬</strong>。年度財務報告製作，2027預算規劃啟動。<span class="milestone-tag" style="background:#e8f5e9;color:var(--green)">年度目標</span></div>
+    </li>
+  </ul>
+</div>
+
+<div style="margin-top:36px;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;font-size:11px;color:var(--muted);">
+  <div>大綠地家具 ／ 內部機密文件</div>
+  <div>2026年4月 ／ 如有疑問請直接問CEO妙珊</div>
+</div>
+
+<div style="text-align:center;margin-top:24px;" class="no-print">
+  <button onclick="window.print()" style="background:var(--ink);color:#fff;border:none;padding:12px 32px;border-radius:6px;font-size:14px;font-family:'Noto Sans TC',sans-serif;cursor:pointer;font-weight:600;">🖨 列印手冊</button>
+</div>
+
+</div>
+<script>
+const GM = 0.60;
+function recalcRow(m) {
+  const rev = parseFloat(document.querySelector(`#row_${m} input:nth-child(1)`)?.value) || 0;
+  // actually let me get by position in each row
+  const inputs = document.querySelectorAll(`#row_${m} input`);
+  if (!inputs.length) return;
+  const revVal = parseFloat(inputs[0].value) || 0;
+  const adVal  = parseFloat(inputs[1].value) || 0;
+  const oneoff = parseFloat(inputs[2].value) || 0;
+
+  // personnel varies by month
+  const personnelMap = {'4':73,'5':75,'6':75,'7':75,'8':75,'9':75,'10':75,'11':75,'12':75};
+  const personnel = personnelMap[m] || 75;
+  const nonPersonnel = 62;
+
+  const gp = revVal * GM;
+  const totalCost = personnel + nonPersonnel + adVal + oneoff;
+  const profit = gp - totalCost;
+
+  document.getElementById(`gp_${m}`).textContent = gp.toFixed(1) + '萬';
+  const profitEl = document.getElementById(`profit_${m}`);
+  profitEl.textContent = (profit >= 0 ? '+' : '') + profit.toFixed(1) + '萬';
+  profitEl.style.color = profit >= 0 ? '#2e7d32' : '#c62828';
+  profitEl.style.fontWeight = '700';
+}
+['4','5','6','7','8','9','10','11','12'].forEach(recalcRow);
+</script>
+</body>
+</html>
